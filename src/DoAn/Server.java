@@ -86,31 +86,42 @@ public class Server {
 						lat = line.substring(4, line.indexOf("&"));
 						log = line.substring(line.indexOf("&")+6, line.length());
 						String key = "4aa2822308c5d4b1b3ab39b0bc0cb2b5";
-						String url = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + log
+						String url = "https://api.openweathermap.org/data/2.5/forecast?lat=" + lat + "&lon=" + log
 								+ "&appid=" + key;
 
 					
 						JSONObject json = readJsonFromUrl(url);
 						
 						
-					
-						JSONArray js = json.getJSONArray("weather");						
+						JSONArray Wther=null;
+						JSONObject maintemp=null;
+						JSONArray js = json.getJSONArray("list");		
 						for (int i = 0; i < js.length(); i++) {
 						    JSONObject jsonobject = js.getJSONObject(i);
-						    weather = jsonobject.getString("main");
+						     Wther= jsonobject.getJSONArray("weather");
+						     maintemp = jsonobject.getJSONObject("main");
 						}
+						
+						for (int i = 0; i < Wther.length(); i++) {
+						    JSONObject jsonobject = Wther.getJSONObject(i);
+						     weather= jsonobject.get("main").toString();
+						    
+						}
+						
 					
-						Double min =  Double.parseDouble(json.getJSONObject("main").get("temp_min").toString())-273  ;
-						Double max =  Double.parseDouble(json.getJSONObject("main").get("temp_max").toString())-273  ;
+						Double min =  Double.parseDouble(maintemp.get("temp_min").toString())-273  ;
+						Double max =  Double.parseDouble(maintemp.get("temp_max").toString())-273  ;
 						String minTemp = ShortNum(min);
 						String maxTemp = ShortNum(max);
-					
+			
 						temp =minTemp + "*C ~ " + maxTemp + "*C";
 						os.write(url);
 						os.newLine();
 						os.flush();
-		
-						name = json.get("name").toString().isEmpty()?"Unidentified":json.get("name").toString();
+						
+						JSONObject city = json.getJSONObject("city");
+						
+						name = city.get("name").toString().isEmpty()?"Unidentified":city.get("name").toString();
 				
 						os.write("Name:" + name);
 						os.newLine();
