@@ -12,7 +12,7 @@ import com.teamdev.jxbrowser.chromium.JSArray;
 
 import java.io.*;
 
-public class ServerProgram {
+public class Server {
 
 	public static void main(String args[]) throws IOException {
 
@@ -21,7 +21,7 @@ public class ServerProgram {
 		System.out.println("Server is waiting to accept user...");
 		int clientNumber = 0;
 
-		// Mở một ServerSocket tại cổng 7777.
+	
 		try {
 			listener = new ServerSocket(7777);
 		} catch (IOException e) {
@@ -32,9 +32,7 @@ public class ServerProgram {
 		try {
 			while (true) {
 
-				// Chấp nhận một yêu cầu kết nối từ phía Client.
-				// Đồng thời nhận được một đối tượng Socket tại server.
-
+			
 				Socket socketOfServer = listener.accept();
 				new ServiceThread(socketOfServer, clientNumber++).start();
 			}
@@ -66,12 +64,12 @@ public class ServerProgram {
 
 			try {
 
-				// Mở luồng vào ra trên Socket tại Server.
+				
 				BufferedReader is = new BufferedReader(new InputStreamReader(socketOfServer.getInputStream()));
 				BufferedWriter os = new BufferedWriter(new OutputStreamWriter(socketOfServer.getOutputStream()));
 
 				while (true) {
-					// Đọc dữ liệu tới server (Do client gửi tới).
+				
 					String line = is.readLine();
 					
 					if (line != null && line.substring(0, 3).equals("lat")) {
@@ -90,18 +88,18 @@ public class ServerProgram {
 						String key = "4aa2822308c5d4b1b3ab39b0bc0cb2b5";
 						String url = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + log
 								+ "&appid=" + key;
-						//Đọc Json từ URL
+
 					
 						JSONObject json = readJsonFromUrl(url);
 						
 						
-						//Đọc JsonArray weather lấy thời tiết
+					
 						JSONArray js = json.getJSONArray("weather");						
 						for (int i = 0; i < js.length(); i++) {
 						    JSONObject jsonobject = js.getJSONObject(i);
 						    weather = jsonobject.getString("main");
 						}
-						//Lấy nhiệt độ TB
+					
 						Double min =  Double.parseDouble(json.getJSONObject("main").get("temp_min").toString())-273  ;
 						Double max =  Double.parseDouble(json.getJSONObject("main").get("temp_max").toString())-273  ;
 						String minTemp = ShortNum(min);

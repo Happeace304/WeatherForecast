@@ -4,12 +4,11 @@ import com.teamdev.jxbrowser.chromium.Browser;
 import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Container;
+
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.LayoutManager;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -22,11 +21,12 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
+
 import javax.swing.WindowConstants;
 
-public class ClientDemo extends JFrame {
+public class Client extends JFrame {
 
+	private static final long serialVersionUID = 1L;
 	public String lat = "";
 	public String log = "";
 	JButton btn;
@@ -58,12 +58,12 @@ public class ClientDemo extends JFrame {
 				try {
 					Double lati;
 					Double longti;
-					String url = ClientDemo.this.browser.getURL();
+					String url = Client.this.browser.getURL();
 
-					ClientDemo.this.lat = url.substring(url.indexOf("lat") + 4, url.indexOf("lat") + 10);
-					ClientDemo.this.log = url.substring(url.indexOf("lon") + 4, url.indexOf("lon") + 10);
-					lati= Double.parseDouble(ClientDemo.this.lat);
-					longti= Double.parseDouble(ClientDemo.this.log);
+					Client.this.lat = url.substring(url.indexOf("lat") + 4, url.indexOf("lat") + 10);
+					Client.this.log = url.substring(url.indexOf("lon") + 4, url.indexOf("lon") + 10);
+					lati= Double.parseDouble(Client.this.lat);
+					longti= Double.parseDouble(Client.this.log);
 					
 					
 					String message = "lat=" + lati+ "&long=" + longti;
@@ -162,23 +162,21 @@ public class ClientDemo extends JFrame {
 	}
 
 	public static void main(String[] args) {
-		ClientDemo clientDemo = new ClientDemo();
+		Client client = new Client();
 
-		// Địa chỉ máy chủ.
+		
 		final String serverHost = "localhost";
 
 		try {
-			// Gửi yêu cầu kết nối tới Server đang lắng nghe
-			// trên máy 'localhost' cổng 7777.
+			
 
 			socketOfClient = new Socket(serverHost, 7777);
 
-			// Tạo luồng đầu ra tại client (Gửi dữ liệu tới server)
+			
 			os = new BufferedWriter(new OutputStreamWriter(socketOfClient.getOutputStream()));
 
-			// Luồng đầu vào tại Client (Nhận dữ liệu từ server).
 			is = new BufferedReader(new InputStreamReader(socketOfClient.getInputStream()));
-			clientDemo.Giaodien();
+			client.Giaodien();
 
 		} catch (UnknownHostException e) {
 			System.err.println("Don't know about host " + serverHost);
@@ -188,8 +186,7 @@ public class ClientDemo extends JFrame {
 			return;
 		}
 
-		// Đọc dữ liệu trả lời từ phía server
-		// Bằng cách đọc luồng đầu vào của Socket tại Client.
+	
 		while (true) {
 			try {
 
