@@ -8,7 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.teamdev.jxbrowser.chromium.JSArray;
+
 
 import java.io.*;
 
@@ -21,7 +21,7 @@ public class Server {
 		System.out.println("Server is waiting to accept user...");
 		int clientNumber = 0;
 
-	
+		// Mở một ServerSocket tại cổng 7777.
 		try {
 			listener = new ServerSocket(7777);
 		} catch (IOException e) {
@@ -32,7 +32,9 @@ public class Server {
 		try {
 			while (true) {
 
-			
+				// Chấp nhận một yêu cầu kết nối từ phía Client.
+				// Đồng thời nhận được một đối tượng Socket tại server.
+
 				Socket socketOfServer = listener.accept();
 				new ServiceThread(socketOfServer, clientNumber++).start();
 			}
@@ -64,12 +66,12 @@ public class Server {
 
 			try {
 
-				
+				// Mở luồng vào ra trên Socket tại Server.
 				BufferedReader is = new BufferedReader(new InputStreamReader(socketOfServer.getInputStream()));
 				BufferedWriter os = new BufferedWriter(new OutputStreamWriter(socketOfServer.getOutputStream()));
 
 				while (true) {
-				
+					// Đọc dữ liệu tới server (Do client gửi tới).
 					String line = is.readLine();
 					
 					if (line != null && line.substring(0, 3).equals("lat")) {
@@ -86,42 +88,31 @@ public class Server {
 						lat = line.substring(4, line.indexOf("&"));
 						log = line.substring(line.indexOf("&")+6, line.length());
 						String key = "4aa2822308c5d4b1b3ab39b0bc0cb2b5";
-						String url = "https://api.openweathermap.org/data/2.5/forecast?lat=" + lat + "&lon=" + log
+						String url = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + log
 								+ "&appid=" + key;
-
+						//Đọc Json từ URL
 					
 						JSONObject json = readJsonFromUrl(url);
 						
 						
-						JSONArray Wther=null;
-						JSONObject maintemp=null;
-						JSONArray js = json.getJSONArray("list");		
+						//Đọc JsonArray weather lấy thời tiết
+						JSONArray js = json.getJSONArray("weather");						
 						for (int i = 0; i < js.length(); i++) {
 						    JSONObject jsonobject = js.getJSONObject(i);
-						     Wther= jsonobject.getJSONArray("weather");
-						     maintemp = jsonobject.getJSONObject("main");
+						    weather = jsonobject.getString("main");
 						}
-						
-						for (int i = 0; i < Wther.length(); i++) {
-						    JSONObject jsonobject = Wther.getJSONObject(i);
-						     weather= jsonobject.get("main").toString();
-						    
-						}
-						
-					
-						Double min =  Double.parseDouble(maintemp.get("temp_min").toString())-273  ;
-						Double max =  Double.parseDouble(maintemp.get("temp_max").toString())-273  ;
+						//Lấy nhiệt độ TB
+						Double min =  Double.parseDouble(json.getJSONObject("main").get("temp_min").toString())-273  ;
+						Double max =  Double.parseDouble(json.getJSONObject("main").get("temp_max").toString())-273  ;
 						String minTemp = ShortNum(min);
 						String maxTemp = ShortNum(max);
-			
+					
 						temp =minTemp + "*C ~ " + maxTemp + "*C";
 						os.write(url);
 						os.newLine();
 						os.flush();
-						
-						JSONObject city = json.getJSONObject("city");
-						
-						name = city.get("name").toString().isEmpty()?"Unidentified":city.get("name").toString();
+		
+						name = json.get("name").toString().isEmpty()?"Unidentified":json.get("name").toString();
 				
 						os.write("Name:" + name);
 						os.newLine();
